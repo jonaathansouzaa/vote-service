@@ -1,1 +1,12 @@
-
+spring:
+  application:
+    name: vote-service
+  datasource:
+    driverClassName: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/vote?createDatabaseIfNotExist=true&useSSL=true
+    username: vote
+    password: vote@123
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
