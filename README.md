@@ -1,3 +1,5 @@
+// deve possuir mysql-server instalado
+
 # Desafio Técnico
 
 ## Objetivo: 

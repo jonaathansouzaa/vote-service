@@ -1,0 +1,9 @@
+spring:
+  profiles: test
+  application:
+    name: vote-service
+  datasource:
+    url: 1
+    username: 1
+    password: 1
+
