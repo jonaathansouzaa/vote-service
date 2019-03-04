@@ -1,6 +1,7 @@
 package com.voteservice.converter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,20 +20,29 @@ public class TopicVotingConverterTest extends DataProvider {
 	
 	@Test
 	public void shouldReturnATopicVotingConvertedFromTopicVotingDTO() {
-		TopicVotingDTO topicVotingDTO = buildTopicVotingDTO();
-		
-		TopicVoting expected = buildTopicVoting(topicVotingDTO, null);
+		final TopicVotingDTO topicVotingDTO = buildTopicVotingDTO();
+		final TopicVoting expected = buildTopicVoting(topicVotingDTO, null);
+
 		TopicVoting actual = topicVotingConverter.entityFromDTO(topicVotingDTO);
 		assertThat(expected).isEqualToComparingFieldByFieldRecursively(actual);
 	}
 	
 	@Test
 	public void shouldReturnATopicVotingDTOConvertedFromTopicVoting() {
-		TopicVoting topicVoting = buildTopicVoting();
-		
-		TopicVotingDTO expected = buildTopicVotingDTO(topicVoting);
+		final TopicVoting topicVoting = buildTopicVoting();
+		final TopicVotingDTO expected = buildTopicVotingDTO(topicVoting);
+
 		TopicVotingDTO actual = topicVotingConverter.dtoFromEntiy(topicVoting);
 		assertThat(expected).isEqualToComparingFieldByFieldRecursively(actual);
+	}
+	
+	@Test
+	public void shouldReturnATopicVotingDTOConvertedFromANullTopicVoting() {
+		final TopicVoting topicVoting = null;
+		final TopicVotingDTO expected = null;
+
+		TopicVotingDTO actual = topicVotingConverter.dtoFromEntiy(topicVoting);
+		assertEquals(expected, actual);
 	}
 	
 }
