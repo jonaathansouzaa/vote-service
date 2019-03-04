@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.voteservice.controller.converter.TopicVotingRequestConverter;
 import com.voteservice.controller.converter.TopicVotingResponseConverter;
+import com.voteservice.controller.request.OpenVotingRequest;
 import com.voteservice.controller.request.TopicVotingRequest;
 import com.voteservice.controller.response.TopicVotingResponse;
 import com.voteservice.dto.TopicVotingDTO;
@@ -26,9 +27,16 @@ public class TopicVotingAdapter {
 	}
 
 	public TopicVotingResponse handleRequest(TopicVotingRequest topicVotingRequest) {
-		TopicVotingDTO topicVotingFromRequest = topicVotingRequestConverter.dtoFromRequest(topicVotingRequest);
+		TopicVotingDTO topicVotingFromRequest = topicVotingRequestConverter.dtoToInsertFromRequest(topicVotingRequest);
 		TopicVotingDTO topicVotingFromService = topicVotingService.save(topicVotingFromRequest);
-		return topicVotingResponseConverter.responseFromDto(topicVotingFromService);
+		return topicVotingResponseConverter.topicVotingResponseFromDto(topicVotingFromService);
+	}
+
+	public TopicVotingResponse openSession(Long topicVotingId, OpenVotingRequest openVotingRequest) {
+		TopicVotingDTO topicVotingFromRequest = topicVotingRequestConverter.openSessionDtoFromRequest(topicVotingId, openVotingRequest);
+		TopicVotingDTO topicVotingOpenSession = topicVotingService.openSession(topicVotingFromRequest);
+		TopicVotingResponse topicVotingOpenSessionResponse = topicVotingResponseConverter.openSessionResponseFromDto(topicVotingOpenSession);
+		return topicVotingOpenSessionResponse;
 	}
 
 }

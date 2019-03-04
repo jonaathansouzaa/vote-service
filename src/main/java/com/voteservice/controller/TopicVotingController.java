@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.voteservice.controller.adapter.TopicVotingAdapter;
+import com.voteservice.controller.request.OpenVotingRequest;
 import com.voteservice.controller.request.TopicVotingRequest;
 
 @RestController
@@ -25,9 +27,14 @@ public class TopicVotingController {
 		this.topicVotingAdapter = topicVotingAdapter;
 	}
 	
-	@PostMapping("/topic-voting")
+	@PostMapping("/topics-voting")
 	public ResponseEntity<?> insertTopicVoting(@RequestBody TopicVotingRequest topicVotingRequest) {
 		return ResponseEntity.ok(topicVotingAdapter.handleRequest(topicVotingRequest));
+	}
+	
+	@PostMapping("/topics-voting/{topicVotingId}/open-session")
+	public ResponseEntity<?> openSession(@PathVariable Long topicVotingId, @RequestBody OpenVotingRequest openVotingRequest) {
+		return ResponseEntity.ok(topicVotingAdapter.openSession(topicVotingId, openVotingRequest));
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)

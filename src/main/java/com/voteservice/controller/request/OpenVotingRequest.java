@@ -4,19 +4,16 @@ import java.time.LocalDateTime;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-public class TopicVotingRequest {
+public class OpenVotingRequest {
 
-	private String description;
-	
 	@DateTimeFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
 	private LocalDateTime finalVoting;
 
-	public String getDescription() {
-		return description;
+	public OpenVotingRequest() {
 	}
-
-	public void setDescription(String description) {
-		this.description = description;
+	
+	public OpenVotingRequest(LocalDateTime finalVoting) {
+		this.finalVoting = finalVoting;
 	}
 
 	public LocalDateTime getFinalVoting() {
@@ -26,5 +23,7 @@ public class TopicVotingRequest {
 	public void setFinalVoting(LocalDateTime finalVoting) {
 		this.finalVoting = finalVoting;
 	}
-
+	
+	
+	
 }

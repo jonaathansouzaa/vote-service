@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import com.voteservice.controller.converter.TopicVotingRequestConverter;
 import com.voteservice.controller.converter.TopicVotingResponseConverter;
+import com.voteservice.controller.request.OpenVotingRequest;
 import com.voteservice.controller.request.TopicVotingRequest;
 import com.voteservice.controller.response.TopicVotingResponse;
 import com.voteservice.data.DataProvider;
@@ -33,51 +34,79 @@ public class TopicVotingAdapterTest extends DataProvider {
 	private TopicVotingResponseConverter topicVotingResponseConverter;
 
 	@InjectMocks
-	private TopicVotingAdapter TopicVotingAdapter;
-
+	private TopicVotingAdapter topicVotingAdapter;
+	
+	private final Long topicVotingId = 1L;
+	private final OpenVotingRequest openVotingRequest = new OpenVotingRequest(dateOf2019);
 	
 	@Test
-	public void shouldReturnAResponseWhenARequestIsCorrectly() {
+	public void shouldReturnAResponseWhenARequestToInsertTopicVotingIsCorrect() {
 		TopicVotingRequest topicVotingRequest = buildRequest();
 		TopicVotingDTO topicVotingDTO = buildTopicVotingDTO();
 		TopicVotingResponse expected = buildResponse(topicVotingDTO);
 		
-		when(topicVotingRequestConverter.dtoFromRequest(topicVotingRequest)).thenReturn(topicVotingDTO);
+		when(topicVotingRequestConverter.dtoToInsertFromRequest(topicVotingRequest)).thenReturn(topicVotingDTO);
 		when(topicVotingService.save(topicVotingDTO)).thenReturn(topicVotingDTO);
-		when(topicVotingResponseConverter.responseFromDto(topicVotingDTO)).thenReturn(expected);
+		when(topicVotingResponseConverter.topicVotingResponseFromDto(topicVotingDTO)).thenReturn(expected);
 		
-		TopicVotingResponse actual = TopicVotingAdapter.handleRequest(topicVotingRequest);
+		TopicVotingResponse actual = topicVotingAdapter.handleRequest(topicVotingRequest);
 		assertEquals(expected, actual);
 		
-		verify(topicVotingRequestConverter).dtoFromRequest(topicVotingRequest);
+		verify(topicVotingRequestConverter).dtoToInsertFromRequest(topicVotingRequest);
 		verify(topicVotingService).save(topicVotingDTO);
-		verify(topicVotingResponseConverter).responseFromDto(topicVotingDTO);
+		verify(topicVotingResponseConverter).topicVotingResponseFromDto(topicVotingDTO);
 	}
 	
 	@Test
-	public void shouldReturnAnExceptionWhenARequestIsWithoutDescription() {
+	public void shouldReturnAnExceptionWhenIReceiveARequestWithoutDescription() {
 		TopicVotingRequest topicVotingRequest = buildRequestWithoutDescription();
 		
-		when(topicVotingRequestConverter.dtoFromRequest(topicVotingRequest)).thenThrow(new IllegalArgumentException(Messages.THE_FIELD_DESCRIPTION_IS_REQUIRED));
+		when(topicVotingRequestConverter.dtoToInsertFromRequest(topicVotingRequest)).thenThrow(new IllegalArgumentException(Messages.THE_FIELD_DESCRIPTION_IS_REQUIRED));
 		
-		assertThatThrownBy(() -> TopicVotingAdapter.handleRequest(topicVotingRequest))
+		assertThatThrownBy(() -> topicVotingAdapter.handleRequest(topicVotingRequest))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(Messages.THE_FIELD_DESCRIPTION_IS_REQUIRED);
 		
-		verify(topicVotingRequestConverter).dtoFromRequest(topicVotingRequest);
+		verify(topicVotingRequestConverter).dtoToInsertFromRequest(topicVotingRequest);
 	}
 	
 	@Test
-	public void shouldReturnAnExceptionWhenARequestIsWithEmptyDescription() {
-		TopicVotingRequest topicVotingRequest = buildRequestWithEmptyDescription();
-		
-		when(topicVotingRequestConverter.dtoFromRequest(topicVotingRequest)).thenThrow(new IllegalArgumentException(Messages.THE_FIELD_DESCRIPTION_IS_REQUIRED));
-		
-		assertThatThrownBy(() -> TopicVotingAdapter.handleRequest(topicVotingRequest))
-			.isInstanceOf(IllegalArgumentException.class)
-			.hasMessage(Messages.THE_FIELD_DESCRIPTION_IS_REQUIRED);
-		
-		verify(topicVotingRequestConverter).dtoFromRequest(topicVotingRequest);
-	}
+	public void shouldReturnAResponseWhenARequestToOpenSessionIsCorrect() {
+		final TopicVotingDTO topicVotingDTO = buildTopicVotingDTO();
+		final TopicVotingResponse expected = new TopicVotingResponse();
 
+		expected.setMessage(Messages.THE_SESSION_TO_VOTING_HAS_OPENED);
+
+		when(topicVotingRequestConverter.openSessionDtoFromRequest(topicVotingId, openVotingRequest)).thenReturn(topicVotingDTO);
+		when(topicVotingService.openSession(topicVotingDTO)).thenReturn(topicVotingDTO);
+		when(topicVotingResponseConverter.openSessionResponseFromDto(topicVotingDTO)).thenReturn(expected);
+		
+		TopicVotingResponse actual = topicVotingAdapter.openSession(topicVotingId, openVotingRequest);
+		
+		assertEquals(expected, actual);
+		
+		verify(topicVotingRequestConverter).openSessionDtoFromRequest(topicVotingId, openVotingRequest);
+		verify(topicVotingService).openSession(topicVotingDTO);
+		verify(topicVotingResponseConverter).openSessionResponseFromDto(topicVotingDTO);
+	}
+	
+	@Test
+	public void shouldReturnAResponseWhenIReceiveARequestButCannotOpenASession() {
+		final TopicVotingDTO topicVotingDTO = null;
+		final TopicVotingResponse expected = new TopicVotingResponse();
+		expected.setMessage(Messages.THE_SESSION_TO_VOTING_CAN_NOT_OPEN);
+		
+		when(topicVotingRequestConverter.openSessionDtoFromRequest(topicVotingId, openVotingRequest)).thenReturn(topicVotingDTO);
+		when(topicVotingService.openSession(topicVotingDTO)).thenReturn(topicVotingDTO);
+		when(topicVotingResponseConverter.openSessionResponseFromDto(topicVotingDTO)).thenReturn(expected);
+		
+		TopicVotingResponse actual = topicVotingAdapter.openSession(topicVotingId, openVotingRequest);
+		
+		assertEquals(expected, actual);
+		
+		verify(topicVotingRequestConverter).openSessionDtoFromRequest(topicVotingId, openVotingRequest);
+		verify(topicVotingService).openSession(topicVotingDTO);
+		verify(topicVotingResponseConverter).openSessionResponseFromDto(topicVotingDTO);
+	}
+	
 }

@@ -1,7 +1,5 @@
 package com.voteservice.model;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,9 +17,7 @@ public class TopicVoting {
 	private Long topicVotingId;
 	@Column(name = "description")
 	private String description;
-	@Column(name = "final_voting")
-	private LocalDateTime finalVoting;
-
+	
 	public Long getTopicVotingId() {
 		return topicVotingId;
 	}
@@ -36,14 +32,6 @@ public class TopicVoting {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public LocalDateTime getFinalVoting() {
-		return finalVoting;
-	}
-
-	public void setFinalVoting(LocalDateTime finalVoting) {
-		this.finalVoting = finalVoting;
 	}
 
 }
