@@ -5,17 +5,18 @@ import java.util.Objects;
 
 import org.springframework.stereotype.Component;
 
+import com.voteservice.dto.SessionDTO;
 import com.voteservice.model.Session;
 import com.voteservice.model.TopicVoting;
 
 @Component
 public class SessionConverter {
 
-	public Session converterTopicVotingToSession(TopicVoting topicVoting, LocalDateTime startingVoting, LocalDateTime finalVoting) {
+	public Session sessionFromDto(TopicVoting topicVoting, LocalDateTime startingVoting, SessionDTO sessionDto) {
 		Session session = new Session();
 		session.setTopicVoting(topicVoting);
 		session.setStartingVoting(startingVoting);
-		session.setFinalVoting(buildFinalVoting(finalVoting, startingVoting));
+		session.setFinalVoting(buildFinalVoting(sessionDto.getFinalVoting(), startingVoting));
 		return session;
 	}
 
@@ -25,5 +26,10 @@ public class SessionConverter {
 		}
 		return finalVoting;
 	}
+
+	public SessionDTO dtoFromEntity(Session session) {
+		return new SessionDTO(Objects.nonNull(session));
+	}
+
 
 }

@@ -21,8 +21,19 @@ public class Session {
 	@OneToOne()
 	@JoinColumn(name = "topic_voting_id")
 	private TopicVoting topicVoting;
+	
 	private LocalDateTime startingVoting;
+	
 	private LocalDateTime finalVoting;
+
+	public Session() {
+	}
+	
+	public Session(TopicVoting topicVoting, LocalDateTime startingVoting, LocalDateTime finalVoting) {
+		this.topicVoting = topicVoting;
+		this.startingVoting = startingVoting;
+		this.finalVoting = finalVoting;
+	}
 
 	public Long getSessionId() {
 		return sessionId;

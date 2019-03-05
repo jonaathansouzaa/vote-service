@@ -15,14 +15,11 @@ public class TopicVotingService {
 
 	private TopicVotingRepository topicVotingRepository;
 	private TopicVotingConverter topicVotingConverter;
-	private SessionService sessionService;
 
 	@Autowired
-	public TopicVotingService(TopicVotingRepository topicVotingRepository, 
-			TopicVotingConverter topicVotingConverter, SessionService sessionService) {
+	public TopicVotingService(TopicVotingRepository topicVotingRepository, TopicVotingConverter topicVotingConverter) {
 		this.topicVotingRepository = topicVotingRepository;
 		this.topicVotingConverter = topicVotingConverter;
-		this.sessionService = sessionService;
 	}
 	
 	public TopicVotingDTO save(TopicVotingDTO topicVotingDTO) {
@@ -31,12 +28,8 @@ public class TopicVotingService {
 		return topicVotingConverter.dtoFromEntiy(topicVotingInserted);
 	}
 
-	public TopicVotingDTO openSession(TopicVotingDTO topicVotingDTO) {
-		Optional<TopicVoting> topicVoting = topicVotingRepository.findById(topicVotingDTO.getTopicVotingId());
-		if (topicVoting.isPresent()) {
-			sessionService.openSession(topicVoting.get(), topicVotingDTO.getFinalVoting());
-		}
-		return topicVotingConverter.dtoFromEntiy(topicVoting.orElse(null));
+	public Optional<TopicVoting> findById(Long topicVotingId) {
+		return topicVotingRepository.findById(topicVotingId);
 	}
 
 }

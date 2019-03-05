@@ -2,10 +2,12 @@ package com.voteservice.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,13 +16,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.voteservice.converter.TopicVotingConverter;
-import com.voteservice.data.DataProvider;
 import com.voteservice.dto.TopicVotingDTO;
 import com.voteservice.model.TopicVoting;
 import com.voteservice.repository.TopicVotingRepository;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TopicVotingServiceTest extends DataProvider {
+public class TopicVotingServiceTest {
 
 	@Mock 
 	private TopicVotingConverter topicVotingConverter;
@@ -31,15 +32,17 @@ public class TopicVotingServiceTest extends DataProvider {
 	@Mock
 	private SessionService sessionService;
 
+	@Mock
+	private VoteService voteService;
+
 	@InjectMocks
 	private TopicVotingService topicVotingService;
-
 	
 	@Test
 	public void shouldReturnATopicVotingWhenISaveWithSuccess() {
-		final TopicVotingDTO topicVotingIn = new TopicVotingDTO();
-		final TopicVotingDTO expected = new TopicVotingDTO();
-		final TopicVoting topicVoting = buildTopicVoting(topicVotingIn, RandomUtils.nextLong());
+		final TopicVotingDTO topicVotingIn = new TopicVotingDTO(RandomStringUtils.randomAlphabetic(10));
+		final TopicVotingDTO expected = new TopicVotingDTO(topicVotingIn.getDescription());
+		final TopicVoting topicVoting = new TopicVoting(topicVotingIn.getDescription());
 		
 		when(topicVotingConverter.entityFromDTO(topicVotingIn)).thenReturn(topicVoting);
 		when(topicVotingRepository.save(topicVoting)).thenReturn(topicVoting);
@@ -52,38 +55,18 @@ public class TopicVotingServiceTest extends DataProvider {
 		verify(topicVotingConverter).entityFromDTO(topicVotingIn);
 		verify(topicVotingRepository).save(topicVoting);
 		verify(topicVotingConverter).dtoFromEntiy(topicVoting);
-	}
-
-	@Test
-	public void shouldReturnATopicVotingWhenIReceiveATopicVotingIdValid() {
-		final TopicVotingDTO topicVotingDTO = buildTopicVotingDTO(RandomUtils.nextLong());
-		final Optional<TopicVoting> topicVoting = Optional.of(buildTopicVoting());
-		final TopicVotingDTO expected = buildTopicVotingDTO(topicVoting.get());
-		
-		when(topicVotingRepository.findById(topicVotingDTO.getTopicVotingId())).thenReturn(topicVoting);
-		when(topicVotingConverter.dtoFromEntiy(topicVoting.get())).thenReturn(expected);
-		
-		TopicVotingDTO actual = topicVotingService.openSession(topicVotingDTO);
-		assertEquals(expected, actual);
-		
-		verify(topicVotingRepository).findById(topicVotingDTO.getTopicVotingId());
-		verify(topicVotingConverter).dtoFromEntiy(topicVoting.get());
-		verify(sessionService).openSession(topicVoting.get(), topicVotingDTO.getFinalVoting());
+		verifyZeroInteractions(sessionService);
 	}
 	
 	@Test
-	public void shouldReturnATopicVotingWhenIReceiveATopicVotingIdInValid() {
-		final TopicVotingDTO topicVotingDTO = buildTopicVotingDTO(RandomUtils.nextLong());
-		final TopicVotingDTO expected = null;
+	public void shouldReturnATopicVotingWhenIsFound() {
+		Long topicVotingId = RandomUtils.nextLong();
+		Optional<TopicVoting> expected = Optional.of(new TopicVoting());
+
+		when(topicVotingRepository.findById(topicVotingId)).thenReturn(expected);
 		
-		when(topicVotingRepository.findById(topicVotingDTO.getTopicVotingId())).thenReturn(Optional.empty());
-		when(topicVotingConverter.dtoFromEntiy(null)).thenReturn(expected);
-		
-		TopicVotingDTO actual = topicVotingService.openSession(topicVotingDTO);
+		Optional<TopicVoting> actual = topicVotingService.findById(topicVotingId);
 		assertEquals(expected, actual);
-		
-		verify(topicVotingRepository).findById(topicVotingDTO.getTopicVotingId());
-		verify(topicVotingConverter).dtoFromEntiy(null);
 	}
 	
 }

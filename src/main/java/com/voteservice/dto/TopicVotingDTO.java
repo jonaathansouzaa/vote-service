@@ -1,12 +1,21 @@
 package com.voteservice.dto;
 
-import java.time.LocalDateTime;
-
 public class TopicVotingDTO {
 
 	private Long topicVotingId;
 	private String description;
-	private LocalDateTime finalVoting;
+
+	public TopicVotingDTO() {
+	}
+	
+	public TopicVotingDTO(String description) {
+		this.description = description;
+	}
+	
+	public TopicVotingDTO(Long topicVotingId, String description) {
+		this.topicVotingId = topicVotingId;
+		this.description = description;
+	}
 
 	public Long getTopicVotingId() {
 		return topicVotingId;
@@ -22,14 +31,6 @@ public class TopicVotingDTO {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public LocalDateTime getFinalVoting() {
-		return finalVoting;
-	}
-
-	public void setFinalVoting(LocalDateTime finalVoting) {
-		this.finalVoting = finalVoting;
 	}
 
 }
