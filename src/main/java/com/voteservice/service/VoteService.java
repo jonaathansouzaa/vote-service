@@ -42,4 +42,17 @@ public class VoteService {
 		throw new IllegalArgumentException(Messages.THE_TOPIC_VOTING_NOT_EXISTS);
 	}
 
+	public VoteDTO result(VoteDTO voteDto) {
+		Optional<TopicVoting> optionalTopicVoting = topicVotingService.findById(voteDto.getTopicVotingId());
+		if (optionalTopicVoting.isPresent()) {
+			if (sessionService.isSessionOpenOfTopicVoting(optionalTopicVoting.get())) {
+				Long countYes = voteRepository.countByTopicVotingAndVoteTrue(optionalTopicVoting.get());
+				Long countNo = voteRepository.countByTopicVotingAndVoteFalse(optionalTopicVoting.get());
+				return voteConverter.dtoFromEntity(optionalTopicVoting.get(), countYes, countNo);
+			}
+			throw new ClosedSessionException(Messages.THE_SESSION_IS_NOT_CLOSE);
+		}
+		throw new IllegalArgumentException(Messages.THE_TOPIC_VOTING_NOT_EXISTS);
+	}
+
 }

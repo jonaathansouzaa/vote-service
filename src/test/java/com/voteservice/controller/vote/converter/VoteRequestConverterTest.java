@@ -19,12 +19,22 @@ public class VoteRequestConverterTest {
 	private VoteRequestConverter voteRequestConverter;
 	
 	@Test
-	public void shouldReturnATopicVotingDtoFromAValidVoteRequest() {
+	public void shouldReturnAVoteDtoFromAValidVoteRequestToVote() {
 		final Long topicVotingId = RandomUtils.nextLong();
 		final VoteRequest voteRequest = new VoteRequest(RandomStringUtils.randomAlphabetic(11), RandomUtils.nextBoolean());
 		
 		VoteDTO expected = new VoteDTO(topicVotingId, voteRequest.getDocument(), voteRequest.getVote());
 		VoteDTO actual = voteRequestConverter.dtoFromRequest(topicVotingId, voteRequest);
+		
+		assertThat(expected).isEqualToComparingFieldByFieldRecursively(actual);
+	}
+	
+	@Test
+	public void shouldReturnAVoteDtoFromAValidVoteRequestToGetResult() {
+		final Long topicVotingId = RandomUtils.nextLong();
+		
+		VoteDTO expected = new VoteDTO(topicVotingId);
+		VoteDTO actual = voteRequestConverter.dtoFromRequest(topicVotingId);
 		
 		assertThat(expected).isEqualToComparingFieldByFieldRecursively(actual);
 	}

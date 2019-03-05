@@ -16,4 +16,10 @@ public class VoteRequestConverter {
 		return voteDto;
 	}
 
+	public VoteDTO dtoFromRequest(Long topicVotingId) {
+		VoteDTO voteDto = new VoteDTO();
+		voteDto.setTopicVotingId(topicVotingId);
+		return voteDto;
+	}
+
 }

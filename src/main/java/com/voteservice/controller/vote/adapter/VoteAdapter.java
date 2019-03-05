@@ -25,9 +25,16 @@ public class VoteAdapter {
 	}
 	
 	public VoteResponse vote(Long topicVotingId, VoteRequest voteRequest) {
-		VoteDTO topicVotingFromRequest = voteRequestConverter.dtoFromRequest(topicVotingId, voteRequest);
-		VoteDTO topicVotingOpenSession = voteService.vote(topicVotingFromRequest);
-		VoteResponse topicVotingOpenSessionResponse = voteResponseConverter.responseFromDto(topicVotingOpenSession);
+		VoteDTO voteFromRequest = voteRequestConverter.dtoFromRequest(topicVotingId, voteRequest);
+		VoteDTO voteResult = voteService.vote(voteFromRequest);
+		VoteResponse topicVotingOpenSessionResponse = voteResponseConverter.responseFromDto(voteResult);
+		return topicVotingOpenSessionResponse;
+	}
+
+	public VoteResponse result(Long topicVotingId) {
+		VoteDTO voteDtoFromRequest = voteRequestConverter.dtoFromRequest(topicVotingId);
+		VoteDTO voteDtoResult = voteService.result(voteDtoFromRequest);
+		VoteResponse topicVotingOpenSessionResponse = voteResponseConverter.responseFromDto(voteDtoResult, voteDtoResult.getTopicVotingDescription());
 		return topicVotingOpenSessionResponse;
 	}
 
