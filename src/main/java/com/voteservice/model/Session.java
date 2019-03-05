@@ -25,6 +25,8 @@ public class Session {
 	private LocalDateTime startingVoting;
 	
 	private LocalDateTime finalVoting;
+	
+	private Boolean produceMessage;
 
 	public Session() {
 	}
@@ -33,6 +35,13 @@ public class Session {
 		this.topicVoting = topicVoting;
 		this.startingVoting = startingVoting;
 		this.finalVoting = finalVoting;
+	}
+
+	public Session(TopicVoting topicVoting, LocalDateTime startingVoting, LocalDateTime finalVoting, Boolean produceMessage) {
+		this.topicVoting = topicVoting;
+		this.startingVoting = startingVoting;
+		this.finalVoting = finalVoting;
+		this.produceMessage = produceMessage;
 	}
 
 	public Long getSessionId() {
@@ -65,6 +74,14 @@ public class Session {
 
 	public void setFinalVoting(LocalDateTime finalVoting) {
 		this.finalVoting = finalVoting;
+	}
+
+	public Boolean isProduceMessage() {
+		return produceMessage;
+	}
+
+	public void setProduceMessage(Boolean produceMessage) {
+		this.produceMessage = produceMessage;
 	}
 
 }

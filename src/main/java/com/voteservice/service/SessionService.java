@@ -1,7 +1,9 @@
 package com.voteservice.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +45,20 @@ public class SessionService {
 			return LocalDateTime.now().isBefore(optionalSession.get().getFinalVoting());
 		}
 		throw new IllegalArgumentException(Messages.THE_SESSION_NOT_EXISTS);
+	}
+
+	public List<String> doHaveAnOpenSessionThatCanBeClosed() {
+		List<Session> sessionsOpen = sessionRepository.findByProduceMessageFalseOrProduceMessage(null);
+		return sessionsOpen.stream()
+			.filter(session -> session.getFinalVoting().isBefore(LocalDateTime.now()))
+			.map(session -> saveAndReturnTopicVotingDescription(session))
+			.collect(Collectors.toList());
+	}
+
+	private String saveAndReturnTopicVotingDescription(Session session) {
+		session.setProduceMessage(Boolean.TRUE);
+		Session sessionSaved = sessionRepository.save(session);
+		return sessionSaved.getTopicVoting().getDescription();
 	}
 
 }
