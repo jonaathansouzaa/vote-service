@@ -19,4 +19,8 @@ public class VoteConverter {
 		return new VoteDTO(Objects.nonNull(entity));
 	}
 
+	public VoteDTO dtoFromEntity(TopicVoting topicVoting, Long countYes, Long countNo) {
+		return new VoteDTO(topicVoting.getDescription(), countYes, countNo);
+	}
+
 }

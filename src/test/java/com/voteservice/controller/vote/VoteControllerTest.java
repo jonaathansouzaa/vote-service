@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -26,9 +27,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.voteservice.ContextsLoads;
 import com.voteservice.base.controller.BaseControllerTest;
 import com.voteservice.controller.topicvoting.request.VoteRequest;
-import com.voteservice.controller.vote.VoteController;
+import com.voteservice.controller.topicvoting.response.TopicVotingResponse;
 import com.voteservice.controller.vote.adapter.VoteAdapter;
 import com.voteservice.controller.vote.response.VoteResponse;
+import com.voteservice.controller.vote.response.VoteResultResponse;
 import com.voteservice.exception.ClosedSessionException;
 import com.voteservice.exception.Messages;
 
@@ -39,6 +41,7 @@ import com.voteservice.exception.Messages;
 public class VoteControllerTest extends BaseControllerTest {
 
 	private static final String TOPIC_VOTING_VOTE = "/v1/topics-voting/%s/vote";
+	private static final String TOPIC_VOTING_RESULT = "/v1/topics-voting/%s/result";
 	private final Long topicVotingId = 1L;
 	
 	private ObjectMapper mapper;
@@ -105,6 +108,25 @@ public class VoteControllerTest extends BaseControllerTest {
 				.andExpect(content().json(expectedResponse));
 		
 		verify(voteAdapter).vote(eq(topicVotingId), any(VoteRequest.class));
+	}
+	
+	@Test
+	public void shouldReturnSuccessWhenIReceiveACorrectlyRequestToResult() throws JsonProcessingException, Exception {
+		final String expectedResponse = loadResourceAsString("json/vote/result-vote-response.json");
+		
+		final TopicVotingResponse topicVotingResponse = new TopicVotingResponse("Vote of president");
+		final VoteResultResponse voteResultResponse = new VoteResultResponse(10L, 5L);
+		final VoteResponse response = new VoteResponse(topicVotingResponse , voteResultResponse, Messages.THE_OPTION_YES_WIN);
+		
+		when(voteAdapter.result(topicVotingId)).thenReturn(response);
+		
+		mockMvc.perform(get(String.format(TOPIC_VOTING_RESULT, topicVotingId))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().json(expectedResponse));
+		
+		verify(voteAdapter).result(topicVotingId);
 	}
 	
 }

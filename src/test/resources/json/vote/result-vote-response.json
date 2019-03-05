@@ -1,0 +1,10 @@
+{
+	"topicVoting": {
+		"description": "Vote of president"
+	},
+	"result": {
+		"countYes": 10,
+		"countNo": 5
+	},
+	"message": "The option 'yes' result won."
+}

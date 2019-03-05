@@ -46,4 +46,13 @@ public class VoteConverterTest {
 		assertThat(expected).isEqualToComparingFieldByFieldRecursively(actual);
 	}
 	
+	@Test
+	public void shouldReturnAVoteDtoWhenIReceiveAResult() {
+		String description = RandomStringUtils.randomAlphabetic(10);
+		final TopicVoting entity = new TopicVoting(description);
+		VoteDTO expected = new VoteDTO(description, RandomUtils.nextLong(), RandomUtils.nextLong());
+		VoteDTO actual = voteConverter.dtoFromEntity(entity, expected.getCountYes(), expected.getCountNo());
+		assertThat(expected).isEqualToComparingFieldByFieldRecursively(actual);
+	}
+	
 }

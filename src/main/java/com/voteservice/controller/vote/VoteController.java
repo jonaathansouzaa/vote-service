@@ -34,8 +34,14 @@ public class VoteController {
 	
 	@RequestMapping(value = "/topics-voting/{topicVotingId}/vote", method = RequestMethod.POST)
 	@ApiOperation(value = "API used to create a new vote of topic voting session", response = VoteResponse.class)
-	public ResponseEntity<VoteResponse> openSession(@PathVariable Long topicVotingId, @RequestBody VoteRequest voteRequest) {
+	public ResponseEntity<VoteResponse> vote(@PathVariable Long topicVotingId, @RequestBody VoteRequest voteRequest) {
 		return ResponseEntity.ok(voteAdapter.vote(topicVotingId, voteRequest));
+	}
+	
+	@RequestMapping(value = "/topics-voting/{topicVotingId}/result", method = RequestMethod.GET)
+	@ApiOperation(value = "API used to create a new vote of topic voting session", response = VoteResponse.class)
+	public ResponseEntity<VoteResponse> getResult(@PathVariable Long topicVotingId) {
+		return ResponseEntity.ok(voteAdapter.result(topicVotingId));
 	}
 	
 	@ExceptionHandler(IllegalArgumentException.class)
