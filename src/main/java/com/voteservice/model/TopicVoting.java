@@ -15,9 +15,17 @@ public class TopicVoting {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "voting_schedule_id")
 	private Long topicVotingId;
+	
 	@Column(name = "description")
 	private String description;
 	
+	public TopicVoting() {
+	}
+
+	public TopicVoting(String description) {
+		this.description = description;
+	}
+
 	public Long getTopicVotingId() {
 		return topicVotingId;
 	}
