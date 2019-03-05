@@ -18,6 +18,8 @@ import com.voteservice.controller.topicvoting.request.VoteRequest;
 import com.voteservice.controller.vote.adapter.VoteAdapter;
 import com.voteservice.controller.vote.response.VoteResponse;
 import com.voteservice.exception.ClosedSessionException;
+import com.voteservice.exception.NotFoundException;
+import com.voteservice.exception.UnableToVoteException;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -55,6 +57,24 @@ public class VoteController {
 	
 	@ExceptionHandler(ClosedSessionException.class)
 	public ResponseEntity<JsonNode> handleException(ClosedSessionException e) {
+    	HttpStatus badRequest = HttpStatus.BAD_REQUEST;
+    	ObjectNode jsonNode = new ObjectMapper().createObjectNode();
+		jsonNode.put("status", badRequest.value());
+		jsonNode.put("message", e.getMessage());
+		return ResponseEntity.status(badRequest).body(jsonNode);
+	}
+	
+	@ExceptionHandler(NotFoundException.class)
+	public ResponseEntity<JsonNode> handleException(NotFoundException e) {
+    	HttpStatus badRequest = HttpStatus.NOT_FOUND;
+    	ObjectNode jsonNode = new ObjectMapper().createObjectNode();
+		jsonNode.put("status", badRequest.value());
+		jsonNode.put("message", e.getMessage());
+		return ResponseEntity.status(badRequest).body(jsonNode);
+	}
+	
+	@ExceptionHandler(UnableToVoteException.class)
+	public ResponseEntity<JsonNode> handleException(UnableToVoteException e) {
     	HttpStatus badRequest = HttpStatus.BAD_REQUEST;
     	ObjectNode jsonNode = new ObjectMapper().createObjectNode();
 		jsonNode.put("status", badRequest.value());

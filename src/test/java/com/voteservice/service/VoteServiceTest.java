@@ -16,10 +16,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import com.voteservice.client.RestClient;
 import com.voteservice.converter.VoteConverter;
 import com.voteservice.dto.VoteDTO;
 import com.voteservice.exception.ClosedSessionException;
 import com.voteservice.exception.Messages;
+import com.voteservice.exception.UnableToVoteException;
 import com.voteservice.model.TopicVoting;
 import com.voteservice.model.Vote;
 import com.voteservice.repository.VoteRepository;
@@ -27,6 +29,9 @@ import com.voteservice.repository.VoteRepository;
 @RunWith(MockitoJUnitRunner.class)
 public class VoteServiceTest {
 
+	@Mock
+	private RestClient restClient;
+	
 	@Mock
 	private SessionService sessionService;
 	
@@ -50,6 +55,7 @@ public class VoteServiceTest {
 		final VoteDTO expected = new VoteDTO(Boolean.TRUE);
 		final Vote entity = new Vote();
 
+		when(restClient.validateDocument(voteDto.getDocument())).thenReturn(Boolean.TRUE);
 		when(topicVotingService.findById(voteDto.getTopicVotingId())).thenReturn(optionalTopicVoting);
 		when(sessionService.isSessionOpenOfTopicVoting(optionalTopicVoting.get())).thenReturn(Boolean.TRUE);
 		when(voteConverter.entityFromDto(optionalTopicVoting.get(), voteDto)).thenReturn(entity);
@@ -59,6 +65,7 @@ public class VoteServiceTest {
 		VoteDTO actual = voteService.vote(voteDto);
 		assertEquals(expected, actual);
 		
+		verify(restClient).validateDocument(voteDto.getDocument());
 		verify(topicVotingService).findById(voteDto.getTopicVotingId());
 		verify(sessionService).isSessionOpenOfTopicVoting(optionalTopicVoting.get());
 		verify(voteConverter).entityFromDto(optionalTopicVoting.get(), voteDto);
@@ -71,24 +78,27 @@ public class VoteServiceTest {
 		final VoteDTO voteDto = new VoteDTO(RandomUtils.nextLong(), RandomStringUtils.randomAlphabetic(11), Boolean.TRUE);
 		final Optional<TopicVoting> optionalTopicVoting = Optional.empty();
 
+		when(restClient.validateDocument(voteDto.getDocument())).thenReturn(Boolean.TRUE);
 		when(topicVotingService.findById(voteDto.getTopicVotingId())).thenReturn(optionalTopicVoting);
 
 		assertThatThrownBy(() -> voteService.vote(voteDto))
 			.isInstanceOf(IllegalArgumentException.class)
 			.hasMessage(Messages.THE_TOPIC_VOTING_NOT_EXISTS);
 		
+		verify(restClient).validateDocument(voteDto.getDocument());
 		verify(topicVotingService).findById(voteDto.getTopicVotingId());
 		verifyZeroInteractions(sessionService);
 		verifyZeroInteractions(voteConverter);
 		verifyZeroInteractions(voteRepository);
 		verifyZeroInteractions(voteConverter);
 	}
-
+	
 	@Test
 	public void shouldReturnAnExceptionWhenIReceiveASessionIsClosed() {
 		final VoteDTO voteDto = new VoteDTO(RandomUtils.nextLong(), RandomStringUtils.randomAlphabetic(11), Boolean.TRUE);
 		final Optional<TopicVoting> optionalTopicVoting = Optional.of(new TopicVoting());
 
+		when(restClient.validateDocument(voteDto.getDocument())).thenReturn(Boolean.TRUE);
 		when(topicVotingService.findById(voteDto.getTopicVotingId())).thenReturn(optionalTopicVoting);
 		when(sessionService.isSessionOpenOfTopicVoting(optionalTopicVoting.get())).thenReturn(Boolean.FALSE);
 
@@ -96,11 +106,25 @@ public class VoteServiceTest {
 			.isInstanceOf(ClosedSessionException.class)
 			.hasMessage(Messages.THE_SESSION_IS_CLOSED);
 		
+		verify(restClient).validateDocument(voteDto.getDocument());
 		verify(topicVotingService).findById(voteDto.getTopicVotingId());
 		verify(sessionService).isSessionOpenOfTopicVoting(optionalTopicVoting.get());
 		verifyZeroInteractions(voteConverter);
 		verifyZeroInteractions(voteRepository);
 		verifyZeroInteractions(voteConverter);
+	}
+	
+	@Test
+	public void shouldReturnAnExceptionWhenIReceiveADocumentUnableToVote() {
+		final VoteDTO voteDto = new VoteDTO(RandomUtils.nextLong(), RandomStringUtils.randomAlphabetic(11), Boolean.TRUE);
+		
+		when(restClient.validateDocument(voteDto.getDocument())).thenReturn(Boolean.FALSE);
+		
+		assertThatThrownBy(() -> voteService.vote(voteDto))
+			.isInstanceOf(UnableToVoteException.class)
+			.hasMessage(Messages.UNABLE_TO_VOTE);
+		
+		verify(restClient).validateDocument(voteDto.getDocument());
 	}
 
 	@Test

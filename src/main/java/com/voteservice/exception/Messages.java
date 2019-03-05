@@ -14,5 +14,7 @@ public class Messages {
 	public static final String THE_OPTION_NO_WIN = "The option 'no' result won.";
 	public static final String THE_OPTION_IS_THE_SAME = "None option won.";
 	public static final String THE_SESSION_IS_NOT_CLOSE = "The topic voting session is not close.";
+	public static final String THE_DOCUMENT_NOT_FOUND = "The document not exists.";
+	public static final String UNABLE_TO_VOTE = "Document invalid to vote.";
 	
 }
