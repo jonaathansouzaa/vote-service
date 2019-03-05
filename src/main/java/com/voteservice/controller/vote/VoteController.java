@@ -6,9 +6,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,10 +16,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.voteservice.controller.topicvoting.request.VoteRequest;
 import com.voteservice.controller.vote.adapter.VoteAdapter;
+import com.voteservice.controller.vote.response.VoteResponse;
 import com.voteservice.exception.ClosedSessionException;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
-@RequestMapping(value = "/v1/", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/v1", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class VoteController {
 
 	private VoteAdapter voteAdapter;
@@ -29,8 +32,9 @@ public class VoteController {
 		this.voteAdapter = voteAdapter;
 	}
 	
-	@PostMapping("/topics-voting/{topicVotingId}/vote")
-	public ResponseEntity<?> openSession(@PathVariable Long topicVotingId, @RequestBody VoteRequest voteRequest) {
+	@RequestMapping(value = "/topics-voting/{topicVotingId}/vote", method = RequestMethod.POST)
+	@ApiOperation(value = "API used to create a new vote of topic voting session", response = VoteResponse.class)
+	public ResponseEntity<VoteResponse> openSession(@PathVariable Long topicVotingId, @RequestBody VoteRequest voteRequest) {
 		return ResponseEntity.ok(voteAdapter.vote(topicVotingId, voteRequest));
 	}
 	
