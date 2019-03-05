@@ -3,31 +3,30 @@ package com.voteservice.client;
 import java.net.URI;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.voteservice.client.response.UserInfoResponse;
+import com.voteservice.config.VoteConfig;
 import com.voteservice.exception.Messages;
 import com.voteservice.exception.NotFoundException;
 
 @Component
 public class RestClient {
 	
-	@Value("${user.info.url}")
-	private String url;
-
 	private RestTemplate restTemplate;
+	private VoteConfig voteConfig;
 
 	@Autowired
-	public RestClient(RestTemplate restTemplate) {
+	public RestClient(RestTemplate restTemplate, VoteConfig voteConfig) {
 		this.restTemplate = restTemplate;
+		this.voteConfig = voteConfig;
 	}
 
 	public Boolean validateDocument(String document) {
 		try {
-			URI uri = URI.create(String.format(url, document));
+			URI uri = URI.create(String.format(voteConfig.getUrl(), document));
 			UserInfoResponse userInfoResponse = restTemplate.getForObject(uri, UserInfoResponse.class);
 			return userInfoResponse.isAbleToVote();
 		} catch (HttpClientErrorException httpClientErrorException) {

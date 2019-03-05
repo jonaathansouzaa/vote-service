@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
@@ -13,11 +14,14 @@ public class TopicVoting {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "voting_schedule_id")
+	@Column(name = "topic_voting_id")
 	private Long topicVotingId;
 	
 	@Column(name = "description")
 	private String description;
+	
+	@OneToOne(mappedBy = "topicVoting")
+	private Session session;
 	
 	public TopicVoting() {
 	}

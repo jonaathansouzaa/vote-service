@@ -1,15 +1,19 @@
 package com.voteservice.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -121,6 +125,26 @@ public class SessionServiceTest {
 			.hasMessage(Messages.THE_SESSION_NOT_EXISTS);
 		
 		verify(sessionRepository).findByTopicVoting(topicVoting);
+	}
+	
+	@Test
+	public void shouldReturnAListOfSessionThatCanBeClosed() {
+		final Session session01 = new Session(new TopicVoting("Session 01"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().minusMinutes(20), Boolean.TRUE);
+		final Session session02 = new Session(new TopicVoting("Session 02"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().plusMinutes(20), null);
+		final Session session03 = new Session(new TopicVoting("Session 03"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().minusMinutes(10), Boolean.TRUE);
+		
+		when(sessionRepository.findByProduceMessageFalse()).thenReturn(Arrays.asList(session01, session02, session03));
+		when(sessionRepository.save(session01)).thenReturn(session01);
+		when(sessionRepository.save(session03)).thenReturn(session03);
+		
+		List<String> sessionClosed = sessionService.doHaveAnOpenSessionThatCanBeClosed();
+		assertThat(sessionClosed).usingDefaultComparator().containsExactlyInAnyOrder(session01.getTopicVoting().getDescription(), session03.getTopicVoting().getDescription());
+		
+		
+		verify(sessionRepository).findByProduceMessageFalse();
+		verify(sessionRepository).save(session01);
+		verify(sessionRepository, never()).save(session02);
+		verify(sessionRepository).save(session03);
 	}
 	
 }
