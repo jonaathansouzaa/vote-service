@@ -7,3 +7,6 @@ spring:
     username: 1
     password: 1
 
+user:
+  info:
+    url: https://user-info.herokuapp.com/users/%s

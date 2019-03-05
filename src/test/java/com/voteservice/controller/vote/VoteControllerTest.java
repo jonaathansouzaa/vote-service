@@ -33,6 +33,8 @@ import com.voteservice.controller.vote.response.VoteResponse;
 import com.voteservice.controller.vote.response.VoteResultResponse;
 import com.voteservice.exception.ClosedSessionException;
 import com.voteservice.exception.Messages;
+import com.voteservice.exception.NotFoundException;
+import com.voteservice.exception.UnableToVoteException;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(VoteController.class)
@@ -77,40 +79,6 @@ public class VoteControllerTest extends BaseControllerTest {
 	}
 	
 	@Test
-	public void shouldReturnSuccessWhenIReceiveATopicVotingThatNotExits() throws JsonProcessingException, Exception {
-		final JsonNode requestJson = loadAsJsonFromResource("json/vote/error/topic-voting-not-exist-request.json");
-		final String expectedResponse = loadResourceAsString("json/vote/error/topic-voting-not-exist-response.json");
-		
-		when(voteAdapter.vote(eq(topicVotingId), any(VoteRequest.class))).thenThrow(new IllegalArgumentException(Messages.THE_TOPIC_VOTING_NOT_EXISTS));
-		
-		mockMvc.perform(post(String.format(TOPIC_VOTING_VOTE, topicVotingId))
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsString(requestJson)))
-				.andExpect(status().isBadRequest())
-				.andExpect(content().json(expectedResponse));
-		
-		verify(voteAdapter).vote(eq(topicVotingId), any(VoteRequest.class));
-	}
-	
-	@Test
-	public void shouldReturnSuccessWhenIReceiveASessionClosed() throws JsonProcessingException, Exception {
-		final JsonNode requestJson = loadAsJsonFromResource("json/vote/error/session-closed-request.json");
-		final String expectedResponse = loadResourceAsString("json/vote/error/session-closed-response.json");
-		
-		when(voteAdapter.vote(eq(topicVotingId), any(VoteRequest.class))).thenThrow(new ClosedSessionException(Messages.THE_SESSION_IS_CLOSED));
-		
-		mockMvc.perform(post(String.format(TOPIC_VOTING_VOTE, topicVotingId))
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(mapper.writeValueAsString(requestJson)))
-				.andExpect(status().isBadRequest())
-				.andExpect(content().json(expectedResponse));
-		
-		verify(voteAdapter).vote(eq(topicVotingId), any(VoteRequest.class));
-	}
-	
-	@Test
 	public void shouldReturnSuccessWhenIReceiveACorrectlyRequestToResult() throws JsonProcessingException, Exception {
 		final String expectedResponse = loadResourceAsString("json/vote/result-vote-response.json");
 		
@@ -127,6 +95,74 @@ public class VoteControllerTest extends BaseControllerTest {
 				.andExpect(content().json(expectedResponse));
 		
 		verify(voteAdapter).result(topicVotingId);
+	}
+	
+	@Test
+	public void shouldReturnAnExceptionWhenIReceiveATopicVotingThatNotExits() throws JsonProcessingException, Exception {
+		final JsonNode requestJson = loadAsJsonFromResource("json/vote/error/topic-voting-not-exist-request.json");
+		final String expectedResponse = loadResourceAsString("json/vote/error/topic-voting-not-exist-response.json");
+		
+		when(voteAdapter.vote(eq(topicVotingId), any(VoteRequest.class))).thenThrow(new IllegalArgumentException(Messages.THE_TOPIC_VOTING_NOT_EXISTS));
+		
+		mockMvc.perform(post(String.format(TOPIC_VOTING_VOTE, topicVotingId))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(requestJson)))
+				.andExpect(status().isBadRequest())
+				.andExpect(content().json(expectedResponse));
+		
+		verify(voteAdapter).vote(eq(topicVotingId), any(VoteRequest.class));
+	}
+	
+	@Test
+	public void shouldReturnAnExceptionWhenIReceiveASessionClosed() throws JsonProcessingException, Exception {
+		final JsonNode requestJson = loadAsJsonFromResource("json/vote/error/session-closed-request.json");
+		final String expectedResponse = loadResourceAsString("json/vote/error/session-closed-response.json");
+		
+		when(voteAdapter.vote(eq(topicVotingId), any(VoteRequest.class))).thenThrow(new ClosedSessionException(Messages.THE_SESSION_IS_CLOSED));
+		
+		mockMvc.perform(post(String.format(TOPIC_VOTING_VOTE, topicVotingId))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(requestJson)))
+				.andExpect(status().isBadRequest())
+				.andExpect(content().json(expectedResponse));
+		
+		verify(voteAdapter).vote(eq(topicVotingId), any(VoteRequest.class));
+	}
+	
+	@Test
+	public void shouldReturnAnExceptionWhenIReceiveANotFoundDocument() throws JsonProcessingException, Exception {
+		final JsonNode requestJson = loadAsJsonFromResource("json/vote/error/not-found-document-request.json");
+		final String expectedResponse = loadResourceAsString("json/vote/error/not-found-document-response.json");
+		
+		when(voteAdapter.vote(eq(topicVotingId), any(VoteRequest.class))).thenThrow(new NotFoundException(Messages.THE_DOCUMENT_NOT_FOUND));
+		
+		mockMvc.perform(post(String.format(TOPIC_VOTING_VOTE, topicVotingId))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(requestJson)))
+				.andExpect(status().isNotFound())
+				.andExpect(content().json(expectedResponse));
+		
+		verify(voteAdapter).vote(eq(topicVotingId), any(VoteRequest.class));
+	}
+	
+	@Test
+	public void shouldReturnAnExceptionWhenIReceiveUnableToVote() throws JsonProcessingException, Exception {
+		final JsonNode requestJson = loadAsJsonFromResource("json/vote/error/unable-to-vote-request.json");
+		final String expectedResponse = loadResourceAsString("json/vote/error/unable-to-vote-response.json");
+		
+		when(voteAdapter.vote(eq(topicVotingId), any(VoteRequest.class))).thenThrow(new UnableToVoteException(Messages.UNABLE_TO_VOTE));
+		
+		mockMvc.perform(post(String.format(TOPIC_VOTING_VOTE, topicVotingId))
+				.accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(mapper.writeValueAsString(requestJson)))
+				.andExpect(status().isBadRequest())
+				.andExpect(content().json(expectedResponse));
+		
+		verify(voteAdapter).vote(eq(topicVotingId), any(VoteRequest.class));
 	}
 	
 }
