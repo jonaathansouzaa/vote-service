@@ -22,7 +22,8 @@ dependencies {
 	compile 'io.springfox:springfox-swagger2:2.9.2'
 	
 	
-	compile "org.springframework.boot:spring-boot-starter-amqp"
+	// TODO: review 
+	// compile "org.springframework.boot:spring-boot-starter-amqp"
 	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
 	compile 'org.springframework.boot:spring-boot-starter-web'
 	
