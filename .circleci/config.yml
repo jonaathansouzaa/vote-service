@@ -10,8 +10,8 @@ jobs:
                 keys:
                     - gradle-{{ checksum "build.gradle" }}
             - run: gradle assemble
-            - run: gradle bootRun
             - run: gradle test
+            - run: gradle build
             - save_cache:
                 paths:
                     - ~/.gradle
