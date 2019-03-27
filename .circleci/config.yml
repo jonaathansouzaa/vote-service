@@ -1,7 +1,9 @@
-version: 2.0
+version: 1.0
 
 jobs:
     build:
+        docker:
+            - image: circleci/openjdk:9-jdk-sid-node-browsers
         steps:
             - checkout
             - restore_cache:
