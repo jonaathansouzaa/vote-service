@@ -127,24 +127,24 @@ public class SessionServiceTest {
 		verify(sessionRepository).findByTopicVoting(topicVoting);
 	}
 	
-//	@Test
-//	public void shouldReturnAListOfSessionThatCanBeClosed() {
-//		final Session session01 = new Session(new TopicVoting("Session 01"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().minusMinutes(20), Boolean.TRUE);
-//		final Session session02 = new Session(new TopicVoting("Session 02"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().plusMinutes(20), null);
-//		final Session session03 = new Session(new TopicVoting("Session 03"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().minusMinutes(10), Boolean.TRUE);
-//		
-//		when(sessionRepository.findByProduceMessageFalse()).thenReturn(Arrays.asList(session01, session02, session03));
-//		when(sessionRepository.save(session01)).thenReturn(session01);
-//		when(sessionRepository.save(session03)).thenReturn(session03);
-//		
-//		List<String> sessionClosed = sessionService.doHaveAnOpenSessionThatCanBeClosed();
-//		assertThat(sessionClosed).usingDefaultComparator().containsExactlyInAnyOrder(session01.getTopicVoting().getDescription(), session03.getTopicVoting().getDescription());
-//		
-//		
-//		verify(sessionRepository).findByProduceMessageFalse();
-//		verify(sessionRepository).save(session01);
-//		verify(sessionRepository, never()).save(session02);
-//		verify(sessionRepository).save(session03);
-//	}
+	@Test
+	public void shouldReturnAListOfSessionThatCanBeClosed() {
+		final Session session01 = new Session(new TopicVoting("Session 01"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().minusMinutes(20), Boolean.TRUE);
+		final Session session02 = new Session(new TopicVoting("Session 02"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().plusMinutes(20), null);
+		final Session session03 = new Session(new TopicVoting("Session 03"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().minusMinutes(10), Boolean.TRUE);
+		
+		when(sessionRepository.findByProduceMessageFalse()).thenReturn(Arrays.asList(session01, session02, session03));
+		when(sessionRepository.save(session01)).thenReturn(session01);
+		when(sessionRepository.save(session03)).thenReturn(session03);
+		
+		List<String> sessionClosed = sessionService.doHaveAnOpenSessionThatCanBeClosed();
+		assertThat(sessionClosed).usingDefaultComparator().containsExactlyInAnyOrder(session01.getTopicVoting().getDescription(), session03.getTopicVoting().getDescription());
+		
+		
+		verify(sessionRepository).findByProduceMessageFalse();
+		verify(sessionRepository).save(session01);
+		verify(sessionRepository, never()).save(session02);
+		verify(sessionRepository).save(session03);
+	}
 	
 }
