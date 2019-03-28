@@ -133,15 +133,18 @@ public class SessionServiceTest {
 		final Session session02 = new Session(new TopicVoting("Session 02"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().plusMinutes(20), null);
 		final Session session03 = new Session(new TopicVoting("Session 03"), LocalDateTime.now().minusMinutes(30), LocalDateTime.now().minusMinutes(10), Boolean.TRUE);
 		
-		when(sessionRepository.findByProduceMessageFalse()).thenReturn(Arrays.asList(session01, session02, session03));
+		when(sessionRepository.findByProduceMessageFalseOrProduceMessage(null)).thenReturn(Arrays.asList(session01, session02, session03));
 		when(sessionRepository.save(session01)).thenReturn(session01);
 		when(sessionRepository.save(session03)).thenReturn(session03);
 		
 		List<String> sessionClosed = sessionService.doHaveAnOpenSessionThatCanBeClosed();
-		assertThat(sessionClosed).usingDefaultComparator().containsExactlyInAnyOrder(session01.getTopicVoting().getDescription(), session03.getTopicVoting().getDescription());
+		
+		String description01 = session01.getTopicVoting().getDescription();
+		String description03 = session03.getTopicVoting().getDescription();
+		assertThat(sessionClosed).usingDefaultComparator().containsExactlyInAnyOrder(description01, description03);
 		
 		
-		verify(sessionRepository).findByProduceMessageFalse();
+		verify(sessionRepository).findByProduceMessageFalseOrProduceMessage(null);
 		verify(sessionRepository).save(session01);
 		verify(sessionRepository, never()).save(session02);
 		verify(sessionRepository).save(session03);
