@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
+
 @RunWith(MockitoJUnitRunner.class)
 public class VoteProducerTest {
 
