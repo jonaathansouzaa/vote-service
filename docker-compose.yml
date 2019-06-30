@@ -1,0 +1,53 @@
+version: '3.5'
+
+volumes:
+  mysql-db:
+  rabbitmq-data:
+
+services: 
+
+  rabbitmq:
+    image: rabbitmq:latest
+    environment:
+      RABBITMQ_DEFAULT_USER: vote
+      RABBITMQ_DEFAULT_PASS: vote@123
+    container_name: rabbitmq-server
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks: 
+      - vote-service-network
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql-server
+    environment:
+      MYSQL_DATABASE: 'vote-service'
+      MYSQL_USER: 'vote'
+      MYSQL_PASSWORD: 'vote@123'
+      MYSQL_ROOT_PASSWORD: 'vote@123'
+    ports:
+      - "3306:3306"
+    networks: 
+      - vote-service-network
+    volumes:
+      - mysql-db:/var/lib/mysql
+
+  vote-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: jsouzajava/vote-service:latest
+    container_name: vote-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - rabbitmq
+    networks: 
+      - vote-service-network
+
+networks: 
+  vote-service-network:
