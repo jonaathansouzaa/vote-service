@@ -6,7 +6,7 @@ pipeline {
     }
     stages {
         stage('Checking') {
-            echo 'Checking Branch Build: ' + env.BRANCH_NAME
+            sh """echo 'Checking Branch Build: ' + ${env.BRANCH_NAME}"""
         }
     }
 }
