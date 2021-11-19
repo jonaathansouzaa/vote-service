@@ -30,7 +30,3 @@ dependencies {
 	testCompile 'org.assertj:assertj-core:3.12.0'
 	testCompile 'org.springframework.boot:spring-boot-starter-test'
 }
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '5.5.1'
-}
